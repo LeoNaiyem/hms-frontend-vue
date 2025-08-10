@@ -1,146 +1,103 @@
-<!-- AppointmentForm.vue -->
 <template>
-  <div>
-    <div class="card bg-info mb-3 p-4">
-      <div class="row">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-          <h3 class="card-title text-white m-0">
-            {{ mode === 'edit' ? 'Edit Appointment' : 'Create Appointment' }}
-          </h3>
-          <router-link to="/appointments" class="btn btn-light btn-sm">
-            <i class="fa fa-arrow-left me-1"></i> Back
-          </router-link>
+  <div class="m-3 dark-mode-support">
+    <div class="card p-3">
+      <h4 class="mb-3">Add New Designation</h4>
+
+      <form @submit.prevent="submitForm">
+        <div class="mb-3">
+          <label for="name" class="form-label">Designation Name</label>
+          <input
+            id="name"
+            v-model="form.name"
+            type="text"
+            class="form-control"
+            :class="{ 'is-invalid': errors.name }"
+            placeholder="Enter designation name"
+          />
+          <div v-if="errors.name" class="invalid-feedback">{{ errors.name[0] }}</div>
         </div>
-      </div>
+
+        <button class="btn btn-success" type="submit" :disabled="loading">
+          <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+          Save
+        </button>
+        <router-link to="/designations" class="btn btn-secondary ms-2">Cancel</router-link>
+      </form>
     </div>
 
-    <div class="card p-4">
-      <form @submit.prevent="handleSubmit">
-        <!-- Patient -->
-        <div class="mb-2">
-          <label>Patient</label>
-          <select v-model="form.patient_id" class="form-select" required>
-            <option value="">--- Select Patient ---</option>
-            <option
-              v-for="patient in patients"
-              :key="patient.id"
-              :value="patient.id"
-            >
-              {{ patient.name ?? patient.id }}
-            </option>
-          </select>
+    <!-- Toast Notification -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+      <div
+        class="toast align-items-center text-white"
+        role="alert"
+        :class="['toast', toastType, { show: showToast }]"
+        aria-live="assertive"
+        aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">{{ toastMessage }}</div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-2 m-auto"
+            @click="showToast = false"></button>
         </div>
-
-        <!-- Doctor -->
-        <div class="mb-2">
-          <label>Doctor</label>
-          <select v-model="form.doctor_id" class="form-select" required>
-            <option value="">--- Select Doctor ---</option>
-            <option
-              v-for="doctor in doctors"
-              :key="doctor.id"
-              :value="doctor.id"
-            >
-              {{ doctor.name ?? doctor.id }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Appointment Date -->
-        <div class="mb-2">
-          <label>Appointment At</label>
-          <input
-            type="datetime-local"
-            v-model="form.appointment_at"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <!-- CC -->
-        <div class="mb-2">
-          <label>Cc</label>
-          <input
-            type="text"
-            v-model="form.cc"
-            class="form-control"
-            required
-          />
-        </div>
-
-        <!-- Submit Button -->
-        <button class="btn btn-info">
-          {{ mode === 'edit' ? 'Update' : 'Create' }}
-        </button>
-      </form>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-const BASE_URL= import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const router = useRouter();
 
-// Props
-const props = defineProps({
-  mode: { type: String, default: 'create' }, // 'create' or 'edit'
-  existingAppointment: { type: Object, default: () => ({}) }
-})
-
-const router = useRouter()
-
-// Form state
 const form = ref({
-  patient_id: '',
-  doctor_id: '',
-  appointment_at: '',
-  cc: ''
-})
+  name: '',
+});
+const errors = ref({});
+const loading = ref(false);
 
-// Prefill if in edit mode
-onMounted(() => {
-  if (props.mode === 'edit' && props.existingAppointment) {
-    form.value = { ...props.existingAppointment }
-  }
-})
+const showToast = ref(false);
+const toastMessage = ref('');
+const toastType = ref('bg-success');
 
-// Load patients & doctors
-const patients = ref([])
-const doctors = ref([])
-
-const loadPatientsAndDoctors = async () => {
-  try {
-    const [patientsRes, doctorsRes] = await Promise.all([
-      axios.get(`${BASE_URL}/patients`),
-      axios.get(`${BASE_URL}/doctors`)
-    ])
-    patients.value = patientsRes.data.data
-    doctors.value = doctorsRes.data.data
-  } catch (error) {
-    console.error('Error loading dropdown data:', error)
-  }
+function showToastMessage(message, type = 'bg-success') {
+  toastMessage.value = message;
+  toastType.value = type;
+  showToast.value = true;
+  setTimeout(() => (showToast.value = false), 3000);
 }
 
-onMounted(loadPatientsAndDoctors)
-
-// Submit
-const handleSubmit = async () => {
+async function submitForm() {
+  loading.value = true;
+  errors.value = {};
   try {
-    const url =
-      props.mode === 'edit'
-        ? `/api/appointments/${form.value.id}`
-        : '/api/appointments'
-    const method = props.mode === 'edit' ? 'put' : 'post'
-
-    await axios[method](url, form.value)
-
-    alert(`Appointment ${props.mode === 'edit' ? 'updated' : 'created'} successfully`)
-    router.push('/appointments')
+    const res = await axios.post(`${BASE_URL}/designations`, form.value);
+    if (res.data.success) {
+      showToastMessage('Designation created successfully.', 'bg-success');
+      router.push('/designations');
+    } else {
+      showToastMessage('Failed to create designation.', 'bg-danger');
+    }
   } catch (error) {
-    console.error('Error submitting form:', error)
+    if (error.response && error.response.status === 422) {
+      errors.value = error.response.data.errors || {};
+    } else {
+      showToastMessage('An error occurred.', 'bg-danger');
+    }
+  } finally {
+    loading.value = false;
   }
 }
 </script>
+
+<style scoped>
+body.dark .bg-success {
+  background-color: #28a745 !important;
+}
+body.dark .bg-danger {
+  background-color: #dc3545 !important;
+}
+</style>
