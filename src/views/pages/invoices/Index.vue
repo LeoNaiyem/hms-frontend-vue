@@ -59,6 +59,7 @@
             <th>Patient</th>
             <th>Date</th>
             <th>Total</th>
+            <th>Paid</th>
             <th>VAT</th>
             <th>Discount</th>
             <th class="text-end">Actions</th>
@@ -71,22 +72,17 @@
               {{ invoice.patient?.name || "N/A" }}<br />
               <small>{{ invoice.patient?.mobile || "" }}</small>
             </td>
-            <td>{{ formatDate(invoice.created_at) }}</td>
-            <td>{{ invoice.receipt_total ?? 0 }}</td>
-            <td>{{ invoice.vat ?? 0 }}</td>
-            <td>{{ invoice.discount ?? 0 }}</td>
+            <td>{{ formatDateTime(invoice.created_at) }}</td>
+            <td>{{ formatMoney(invoice.invoice_total) }}</td>
+            <td>{{ formatMoney(invoice.paid_total) }}</td>
+            <td>{{ formatMoney(invoice.vat) }}</td>
+            <td>{{ formatMoney(invoice.discount) }}</td>
             <td class="text-end">
               <router-link
                 :to="`/invoices/${invoice.id}`"
                 class="btn btn-sm btn-outline-primary me-1"
               >
                 View
-              </router-link>
-              <router-link
-                :to="`/invoices/${invoice.id}/edit`"
-                class="btn btn-sm btn-outline-warning me-1"
-              >
-                Edit
               </router-link>
               <button
                 class="btn btn-sm btn-outline-danger"
@@ -96,6 +92,7 @@
               </button>
             </td>
           </tr>
+
           <tr v-if="invoices.length === 0">
             <td colspan="7" class="text-center">No invoices found.</td>
           </tr>
@@ -144,24 +141,16 @@
           <div class="modal-content p-4 rounded gap-3 d-flex bg-light">
             <div class="modal-header">
               <h5 class="modal-title">Confirm Deletion</h5>
-              <button
-                class="btn-close"
-                @click="showDeleteModal = false"
-              ></button>
+              <button class="btn-close" @click="showDeleteModal = false"></button>
             </div>
             <div class="modal-body">
               Delete invoice
               <strong>#{{ invoiceToDelete?.id }}</strong> for
-              <strong>{{
-                invoiceToDelete?.patient?.name || "this patient"
-              }}</strong
+              <strong>{{ invoiceToDelete?.patient?.name || "this patient" }}</strong
               >?
             </div>
             <div class="modal-footer d-flex justify-content-between mt-1">
-              <button
-                class="btn btn-secondary"
-                @click="showDeleteModal = false"
-              >
+              <button class="btn btn-secondary" @click="showDeleteModal = false">
                 Cancel
               </button>
               <button class="btn btn-danger" @click="deleteInvoice">
@@ -173,7 +162,7 @@
       </div>
     </transition>
 
-    <!-- Bootstrap Toast -->
+    <!-- Toast -->
     <div
       class="toast-container position-fixed bottom-0 end-0 p-3"
       style="z-index: 1055"
@@ -214,14 +203,17 @@ const loading = ref(false);
 const showDeleteModal = ref(false);
 const invoiceToDelete = ref(null);
 
-// Toast state
 const showToast = ref(false);
 const toastMessage = ref("");
 const toastType = ref("bg-success");
-const toastRef = ref(null);
 
-function formatDate(dt) {
-  return dt ? new Date(dt).toLocaleDateString() : "-";
+function formatDateTime(dt) {
+  return dt ? new Date(dt).toLocaleString() : "-";
+}
+
+function formatMoney(val) {
+  if (val === null || val === undefined) return "-";
+  return Number(val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 async function fetchInvoices(page = 1) {
@@ -238,6 +230,8 @@ async function fetchInvoices(page = 1) {
       invoices.value = data.data;
       currentPage.value = data.current_page;
       totalPages.value = data.last_page;
+    } else {
+      showToastMessage("Failed to fetch invoices.", "bg-danger");
     }
   } catch (err) {
     console.error(err);
@@ -272,7 +266,7 @@ async function deleteInvoice() {
 
   try {
     const res = await axios.delete(`${BASE_URL}/invoices/${id}`);
-    if (res.data.success) {
+    if (res.data && (res.data.success === true || res.status === 200)) {
       showToastMessage("Invoice deleted.", "bg-success");
       fetchInvoices(currentPage.value);
     } else {
@@ -311,12 +305,5 @@ onMounted(() => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-body.dark .bg-success {
-  background-color: #28a745 !important;
-}
-body.dark .bg-danger {
-  background-color: #dc3545 !important;
 }
 </style>
