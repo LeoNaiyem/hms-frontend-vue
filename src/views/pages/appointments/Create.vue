@@ -1,146 +1,191 @@
-<!-- AppointmentForm.vue -->
 <template>
-  <div>
-    <div class="card bg-info mb-3 p-4">
-      <div class="row">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-          <h3 class="card-title text-white m-0">
-            {{ mode === 'edit' ? 'Edit Appointment' : 'Create Appointment' }}
-          </h3>
-          <router-link to="/appointments" class="btn btn-light btn-sm">
-            <i class="fa fa-arrow-left me-1"></i> Back
-          </router-link>
-        </div>
+  <div class="m-3 dark-mode-support">
+    <!-- Header -->
+    <div class="card mb-3">
+      <div class="d-flex justify-content-between align-items-center p-3">
+        <h4 class="m-0">Create Appointment</h4>
+        <router-link to="/appointments" class="btn btn-success"
+          >Back</router-link
+        >
       </div>
     </div>
-
     <div class="card p-4">
-      <form @submit.prevent="handleSubmit">
-        <!-- Patient -->
-        <div class="mb-2">
-          <label>Patient</label>
-          <select v-model="form.patient_id" class="form-select" required>
-            <option value="">--- Select Patient ---</option>
+      <form @submit.prevent="submitForm">
+        <!-- Patient Dropdown -->
+        <div class="mb-3">
+          <label for="patient_id" class="form-label">Patient</label>
+          <select
+            v-model="form.patient_id"
+            id="patient_id"
+            class="form-select"
+            required
+          >
+            <option disabled value="">-- Select Patient --</option>
             <option
               v-for="patient in patients"
               :key="patient.id"
               :value="patient.id"
             >
-              {{ patient.name ?? patient.id }}
+              {{ patient.name }} ({{ patient.mobile }})
             </option>
           </select>
         </div>
 
-        <!-- Doctor -->
-        <div class="mb-2">
-          <label>Doctor</label>
-          <select v-model="form.doctor_id" class="form-select" required>
-            <option value="">--- Select Doctor ---</option>
+        <!-- Doctor Dropdown -->
+        <div class="mb-3">
+          <label for="doctor_id" class="form-label">Doctor</label>
+          <select
+            v-model="form.doctor_id"
+            id="doctor_id"
+            class="form-select"
+            required
+          >
+            <option disabled value="">-- Select Doctor --</option>
             <option
               v-for="doctor in doctors"
               :key="doctor.id"
               :value="doctor.id"
             >
-              {{ doctor.name ?? doctor.id }}
+              {{ doctor.name }} ({{ doctor.phone }})
             </option>
           </select>
         </div>
 
-        <!-- Appointment Date -->
-        <div class="mb-2">
-          <label>Appointment At</label>
+        <!-- Appointment Date & Time -->
+        <div class="mb-3">
+          <label for="appointment_at" class="form-label"
+            >Appointment Date & Time</label
+          >
           <input
-            type="datetime-local"
             v-model="form.appointment_at"
+            type="datetime-local"
+            id="appointment_at"
             class="form-control"
             required
           />
         </div>
 
         <!-- CC -->
-        <div class="mb-2">
-          <label>Cc</label>
-          <input
-            type="text"
+        <div class="mb-3">
+          <label for="cc" class="form-label">Chief Complaint (CC)</label>
+          <textarea
             v-model="form.cc"
+            id="cc"
             class="form-control"
-            required
-          />
+            rows="3"
+            placeholder="Optional"
+          ></textarea>
         </div>
 
-        <!-- Submit Button -->
-        <button class="btn btn-info">
-          {{ mode === 'edit' ? 'Update' : 'Create' }}
-        </button>
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+          <router-link to="/appointments" class="btn btn-secondary"
+            >Cancel</router-link
+          >
+          <button type="submit" class="btn btn-success">
+            Save Appointment
+          </button>
+        </div>
       </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import axios from 'axios';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import axios from "axios";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const BASE_URL= import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const router = useRouter();
 
-// Props
-const props = defineProps({
-  mode: { type: String, default: 'create' }, // 'create' or 'edit'
-  existingAppointment: { type: Object, default: () => ({}) }
-})
-
-const router = useRouter()
-
-// Form state
 const form = ref({
-  patient_id: '',
-  doctor_id: '',
-  appointment_at: '',
-  cc: ''
-})
+  patient_id: "",
+  doctor_id: "",
+  appointment_at: "",
+  cc: "",
+});
 
-// Prefill if in edit mode
+const doctors = ref([]);
+const patients = ref([]);
+
+const fetchDoctors = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/doctors`);
+    if (res.data.success) {
+      doctors.value = res.data.data.data || res.data; // depends on your API structure
+      console.log(res.data.data.data);
+    }
+  } catch (err) {
+    console.error("Failed to load doctors:", err);
+  }
+};
+
+const fetchPatients = async () => {
+  try {
+    const res = await axios.get(`${BASE_URL}/patients`);
+    if (res.data.success) {
+      patients.value = res.data.data.data || res.data;
+    }
+  } catch (err) {
+    console.error("Failed to load patients:", err);
+  }
+};
+
+const submitForm = async () => {
+  try {
+    // Format datetime to MySQL format if needed
+    const formattedDate = new Date(form.value.appointment_at)
+      .toISOString()
+      .slice(0, 19)
+      .replace("T", " ");
+
+    const payload = {
+      ...form.value,
+      appointment_at: formattedDate,
+    };
+
+    const res = await axios.post(`${BASE_URL}/appointments`, payload);
+
+    if (res.data.success) {
+      alert("Appointment created successfully!");
+      router.push("/appointments");
+    } else {
+      alert("Failed to create appointment.");
+    }
+  } catch (err) {
+    console.error("Error creating appointment:", err);
+    alert("An error occurred. Check console for details.");
+  }
+};
+
 onMounted(() => {
-  if (props.mode === 'edit' && props.existingAppointment) {
-    form.value = { ...props.existingAppointment }
-  }
-})
-
-// Load patients & doctors
-const patients = ref([])
-const doctors = ref([])
-
-const loadPatientsAndDoctors = async () => {
-  try {
-    const [patientsRes, doctorsRes] = await Promise.all([
-      axios.get(`${BASE_URL}/patients`),
-      axios.get(`${BASE_URL}/doctors`)
-    ])
-    patients.value = patientsRes.data.data
-    doctors.value = doctorsRes.data.data
-  } catch (error) {
-    console.error('Error loading dropdown data:', error)
-  }
-}
-
-onMounted(loadPatientsAndDoctors)
-console.log(patients);
-// Submit
-const handleSubmit = async () => {
-  try {
-    const url =
-      props.mode === 'edit'
-        ? `/api/appointments/${form.value.id}`
-        : '/api/appointments'
-    const method = props.mode === 'edit' ? 'put' : 'post'
-
-    await axios[method](url, form.value)
-
-    alert(`Appointment ${props.mode === 'edit' ? 'updated' : 'created'} successfully`)
-    router.push('/appointments')
-  } catch (error) {
-    console.error('Error submitting form:', error)
-  }
-}
+  fetchDoctors();
+  fetchPatients();
+});
 </script>
+
+<style scoped>
+.dark-mode-support {
+  background-color: transparent;
+  color: #000;
+}
+
+body.dark .dark-mode-support {
+  background-color: #121212;
+  color: #f1f1f1;
+}
+
+body.dark .card {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+body.dark .form-control,
+body.dark .form-select,
+body.dark textarea {
+  background-color: #2c2c2c;
+  color: #fff;
+  border-color: #444;
+}
+</style>
