@@ -499,7 +499,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory("/Projects/hms-frontend-vue/"),
   routes,
 });
 

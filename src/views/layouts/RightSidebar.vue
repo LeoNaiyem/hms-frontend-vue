@@ -58,7 +58,7 @@
               <span class="hover-overlay mb-2 rounded d-block"
                 ><img
                   class="img-fluid img-prototype mb-0"
-                  src="../assets/img/generic/falcon-mode-default.jpg"
+                  src="/assets/img/generic/falcon-mode-default.jpg"
                   alt="" /></span
               ><span class="label-text">Light</span></label
             >
@@ -79,7 +79,7 @@
               <span class="hover-overlay mb-2 rounded d-block"
                 ><img
                   class="img-fluid img-prototype mb-0"
-                  src="../assets/img/generic/falcon-mode-dark.jpg"
+                  src="/assets/img/generic/falcon-mode-dark.jpg"
                   alt="" /></span
               ><span class="label-text"> Dark</span></label
             >
@@ -91,7 +91,7 @@
         <div class="d-flex align-items-start">
           <img
             class="me-2"
-            src="../assets/img/icons/left-arrow-from-left.svg"
+            src="/assets/img/icons/left-arrow-from-left.svg"
             width="20"
             alt=""
           />
@@ -100,7 +100,7 @@
             <p class="fs--1 mb-0">Switch your language direction</p>
             <a
               class="fs--1"
-              href="../documentation/customization/configuration.html"
+              href="/documentation/customization/configuration.html"
               >RTL Documentation</a
             >
           </div>
@@ -119,7 +119,7 @@
         <div class="d-flex align-items-start">
           <img
             class="me-2"
-            src="../assets/img/icons/arrows-h.svg"
+            src="/assets/img/icons/arrows-h.svg"
             width="20"
             alt=""
           />
@@ -128,7 +128,7 @@
             <p class="fs--1 mb-0">Toggle container layout system</p>
             <a
               class="fs--1"
-              href="../documentation/customization/configuration.html"
+              href="/documentation/customization/configuration.html"
               >Fluid Documentation</a
             >
           </div>
@@ -146,7 +146,7 @@
       <div class="d-flex align-items-start">
         <img
           class="me-2"
-          src="../assets/img/icons/paragraph.svg"
+          src="/assets/img/icons/paragraph.svg"
           width="20"
           alt=""
         />
@@ -216,7 +216,7 @@
             >
               <img
                 class="img-fluid img-prototype"
-                src="../assets/img/generic/default.png"
+                src="/assets/img/generic/default.png"
                 alt=""
               /><span class="label-text"> Transparent</span></label
             >
@@ -236,7 +236,7 @@
             >
               <img
                 class="img-fluid img-prototype"
-                src="../assets/img/generic/inverted.png"
+                src="/assets/img/generic/inverted.png"
                 alt=""
               /><span class="label-text"> Inverted</span></label
             >
@@ -256,7 +256,7 @@
             >
               <img
                 class="img-fluid img-prototype"
-                src="../assets/img/generic/card.png"
+                src="/assets/img/generic/card.png"
                 alt=""
               /><span class="label-text"> Card</span></label
             >
@@ -276,7 +276,7 @@
             >
               <img
                 class="img-fluid img-prototype"
-                src="../assets/img/generic/vibrant.png"
+                src="/assets/img/generic/vibrant.png"
                 alt=""
               /><span class="label-text"> Vibrant</span></label
             >
@@ -286,7 +286,7 @@
       <div class="text-center mt-5">
         <img
           class="mb-4"
-          src="../assets/img/icons/spot-illustrations/47.png"
+          src="/assets/img/icons/spot-illustrations/47.png"
           alt=""
           width="120"
         />

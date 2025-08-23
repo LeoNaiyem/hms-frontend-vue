@@ -3,7 +3,7 @@
     <div
       id="invoice-area"
       class="card shadow my-3 mx-auto"
-      style="overflow: hidden; width: 100%; max-width: 950px;"
+      style="overflow: hidden; width: 100%; max-width: 950px"
     >
       <!-- Header -->
       <div class="invoice-header p-5 d-flex align-items-center">
@@ -151,10 +151,12 @@
           </p>
         </div>
         <div class="col-6 text-end p-0">
-          <div class="subtotal-box d-flex justify-content-end align-items-center">
+          <div
+            class="subtotal-box d-flex justify-content-end align-items-center"
+          >
             <div>
-              <p>Sub-total: </p>
-              <p>Tax: </p>
+              <p>Sub-total:</p>
+              <p>Tax:</p>
             </div>
             <div>
               <p>${{ subtotal }}</p>
@@ -162,7 +164,7 @@
             </div>
           </div>
           <div class="total-box">
-            <h5 class="m-0 text-light">Total: </h5>
+            <h5 class="m-0 text-light">Total:</h5>
             <h5 class="m-0 text-light">${{ total }}</h5>
           </div>
         </div>
@@ -192,8 +194,10 @@
 <script setup>
 import axios from "axios";
 import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+const router = useRouter();
 
 const patients = ref([]);
 const services = ref([]);
@@ -250,7 +254,7 @@ async function createInvoice() {
   try {
     await axios.post(`${BASE_URL}/invoices`, payload);
     alert("Invoice created successfully!");
-    window.location.assign("/invoices"); 
+    router.push("/invoices");
   } catch (err) {
     console.error(err);
     alert("Error creating invoice.");

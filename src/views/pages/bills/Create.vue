@@ -5,7 +5,7 @@
       <div class="row">
         <div class="col-12 d-flex justify-content-between align-items-center">
           <h3 class="card-title text-white m-0">
-            {{ mode === 'edit' ? 'Edit Appointment' : 'Create Appointment' }}
+            {{ mode === "edit" ? "Edit Appointment" : "Create Appointment" }}
           </h3>
           <router-link to="/appointments" class="btn btn-light btn-sm">
             <i class="fa fa-arrow-left me-1"></i> Back
@@ -60,17 +60,12 @@
         <!-- CC -->
         <div class="mb-2">
           <label>Cc</label>
-          <input
-            type="text"
-            v-model="form.cc"
-            class="form-control"
-            required
-          />
+          <input type="text" v-model="form.cc" class="form-control" required />
         </div>
 
         <!-- Submit Button -->
         <button class="btn btn-info">
-          {{ mode === 'edit' ? 'Update' : 'Create' }}
+          {{ mode === "edit" ? "Update" : "Create" }}
         </button>
       </form>
     </div>
@@ -78,69 +73,72 @@
 </template>
 
 <script setup>
-import axios from 'axios';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import axios from "axios";
+import { onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const BASE_URL= import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Props
 const props = defineProps({
-  mode: { type: String, default: 'create' }, // 'create' or 'edit'
-  existingAppointment: { type: Object, default: () => ({}) }
-})
+  mode: { type: String, default: "create" }, // 'create' or 'edit'
+  existingAppointment: { type: Object, default: () => ({}) },
+});
 
-const router = useRouter()
+const router = useRouter();
 
 // Form state
 const form = ref({
-  patient_id: '',
-  doctor_id: '',
-  appointment_at: '',
-  cc: ''
-})
+  patient_id: "",
+  doctor_id: "",
+  appointment_at: "",
+  cc: "",
+});
 
 // Prefill if in edit mode
 onMounted(() => {
-  if (props.mode === 'edit' && props.existingAppointment) {
-    form.value = { ...props.existingAppointment }
+  if (props.mode === "edit" && props.existingAppointment) {
+    form.value = { ...props.existingAppointment };
   }
-})
+});
 
 // Load patients & doctors
-const patients = ref([])
-const doctors = ref([])
-
+const patients = ref([]);
+const doctors = ref([]);
 const loadPatientsAndDoctors = async () => {
   try {
     const [patientsRes, doctorsRes] = await Promise.all([
       axios.get(`${BASE_URL}/patients`),
-      axios.get(`${BASE_URL}/doctors`)
-    ])
-    patients.value = patientsRes.data.data
-    doctors.value = doctorsRes.data.data
+      axios.get(`${BASE_URL}/doctors`),
+    ]);
+    patients.value = patientsRes.data.data.data;
+    doctors.value = doctorsRes.data.data.data;
   } catch (error) {
-    console.error('Error loading dropdown data:', error)
+    console.error("Error loading dropdown data:", error);
   }
-}
+};
 
-onMounted(loadPatientsAndDoctors)
+onMounted(loadPatientsAndDoctors);
 
 // Submit
 const handleSubmit = async () => {
   try {
     const url =
-      props.mode === 'edit'
+      props.mode === "edit"
         ? `/api/appointments/${form.value.id}`
-        : '/api/appointments'
-    const method = props.mode === 'edit' ? 'put' : 'post'
+        : "/api/appointments";
+    const method = props.mode === "edit" ? "put" : "post";
 
-    await axios[method](url, form.value)
+    await axios[method](url, form.value);
 
-    alert(`Appointment ${props.mode === 'edit' ? 'updated' : 'created'} successfully`)
-    router.push('/appointments')
+    alert(
+      `Appointment ${
+        props.mode === "edit" ? "updated" : "created"
+      } successfully`
+    );
+    router.push("/appointments");
   } catch (error) {
-    console.error('Error submitting form:', error)
+    console.error("Error submitting form:", error);
   }
-}
+};
 </script>

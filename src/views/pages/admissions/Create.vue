@@ -117,8 +117,8 @@ const loadPatientsAndDoctors = async () => {
       axios.get(`${BASE_URL}/patients`),
       axios.get(`${BASE_URL}/doctors`)
     ])
-    patients.value = patientsRes.data.data
-    doctors.value = doctorsRes.data.data
+    patients.value = patientsRes.data.data.data;
+    doctors.value = doctorsRes.data.data.data;
   } catch (error) {
     console.error('Error loading dropdown data:', error)
   }
