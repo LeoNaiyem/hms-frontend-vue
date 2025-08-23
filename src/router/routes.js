@@ -1,5 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+//dashboard home
+const DashboardHome = () => import("@/views/pages/dashboard/Summary.vue");
+
 // summary
 const SummaryIndex = () => import("@/views/pages/summary/Index.vue");
 const SummaryCreate = () => import("@/views/pages/summary/Create.vue");
@@ -68,16 +71,22 @@ const MedicinesEdit = () => import("@/views/pages/medicines/Edit.vue");
 const MedicinesView = () => import("@/views/pages/medicines/View.vue");
 
 // medicineTypes
-const MedicineTypesIndex = () => import("@/views/pages/medicineTypes/Index.vue");
-const MedicineTypesCreate = () => import("@/views/pages/medicineTypes/Create.vue");
+const MedicineTypesIndex = () =>
+  import("@/views/pages/medicineTypes/Index.vue");
+const MedicineTypesCreate = () =>
+  import("@/views/pages/medicineTypes/Create.vue");
 const MedicineTypesEdit = () => import("@/views/pages/medicineTypes/Edit.vue");
 const MedicineTypesView = () => import("@/views/pages/medicineTypes/View.vue");
 
 // medicineCategories
-const MedicineCategoriesIndex = () => import("@/views/pages/medicineCategories/Index.vue");
-const MedicineCategoriesCreate = () => import("@/views/pages/medicineCategories/Create.vue");
-const MedicineCategoriesEdit = () => import("@/views/pages/medicineCategories/Edit.vue");
-const MedicineCategoriesView = () => import("@/views/pages/medicineCategories/View.vue");
+const MedicineCategoriesIndex = () =>
+  import("@/views/pages/medicineCategories/Index.vue");
+const MedicineCategoriesCreate = () =>
+  import("@/views/pages/medicineCategories/Create.vue");
+const MedicineCategoriesEdit = () =>
+  import("@/views/pages/medicineCategories/Edit.vue");
+const MedicineCategoriesView = () =>
+  import("@/views/pages/medicineCategories/View.vue");
 
 // themes
 const ThemesIndex = () => import("@/views/pages/themes/Index.vue");
@@ -112,14 +121,20 @@ const PrescriptionsEdit = () => import("@/views/pages/prescriptions/Edit.vue");
 const PrescriptionsView = () => import("@/views/pages/prescriptions/View.vue");
 
 // logout
-const Logout= ()=> import("@/views/pages/logout/Logout.vue");
+const Logout = () => import("@/views/pages/logout/Logout.vue");
 
 const routes = [
+  //dashboard home
+  {
+    path: "/",
+    name: "DashboardHome",
+    component: DashboardHome,
+  },
   // summary
   {
     path: "/summary",
     name: "SummaryIndex",
-    component: SummaryIndex,
+    component: DashboardHome,
   },
   {
     path: "/summary/create",
@@ -381,7 +396,6 @@ const routes = [
     props: true,
   },
 
-  
   // Medicines
   {
     path: "/medicines",
@@ -453,7 +467,7 @@ const routes = [
     component: PrescriptionsView,
     props: true,
   },
-  
+
   // MedicineCategories
   {
     path: "/medicine-categories",
@@ -480,22 +494,22 @@ const routes = [
 
   //themes
   {
-    path:"/themes",
-    name:"Themes",
-    component:ThemesIndex,
+    path: "/themes",
+    name: "Themes",
+    component: ThemesIndex,
   },
   {
-    path:"/themes/create",
-    name:"ThemesCreate",
-    component:ThemesCreate,
+    path: "/themes/create",
+    name: "ThemesCreate",
+    component: ThemesCreate,
   },
 
   //logout
   {
-    path:"/logout",
-    name:"Logout",
-    component:Logout,
-  }
+    path: "/logout",
+    name: "Logout",
+    component: Logout,
+  },
 ];
 
 const router = createRouter({

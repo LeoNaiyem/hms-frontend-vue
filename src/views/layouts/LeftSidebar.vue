@@ -188,7 +188,7 @@ const sidebarItems = [
           ></span>
         </button>
       </div>
-      <a class="navbar-brand" href="../index.html">
+      <router-link class="navbar-brand" to="/">
         <div class="d-flex align-items-center py-3">
           <img
             class="me-2 object-fit-cover"
@@ -197,7 +197,7 @@ const sidebarItems = [
             height="40"
           /><span class="font-sans-serif">HMS</span>
         </div>
-      </a>
+      </router-link>
     </div>
     <div class="collapse navbar-collapse" id="navbarVerticalCollapse">
       <div class="navbar-vertical-content scrollbar">
